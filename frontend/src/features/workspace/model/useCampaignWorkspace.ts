@@ -1,9 +1,9 @@
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import type { SubmitEvent } from 'react';
 import { api } from '../../../api/campaigns';
 import { ApiError } from '../../../api/client';
 import type { CampaignInput, Catalog, CatalogItem, Draft, Stream } from '../../../api/types';
-import { editDraft } from '../../streams/model/shares';
+import { editDraft, hasDraftChanges } from '../../streams/model/shares';
 import type { DraftAction } from '../../streams/model/shares';
 import type { Notice } from '../../../shared/ui/StatusNotice';
 import { useUnsavedChanges } from '../../../shared/hooks/useUnsavedChanges';
@@ -21,11 +21,19 @@ async function requestCatalog(signal?: AbortSignal): Promise<Catalog | string> {
 }
 
 type WorkspaceActivity = 'loading-editor' | 'working';
+const campaignQueryParam = 'campaign';
 
 export function useCampaignWorkspace() {
   const [catalog, setCatalog] = useState<Catalog | null>(null);
   const [campaigns, setCampaigns] = useState<CatalogItem[]>([]);
   const [selectedId, setSelectedId] = useState('');
+  const rememberCampaign = useCallback((id?: number) => {
+    setSelectedId(id === undefined ? '' : String(id));
+    const url = new URL(window.location.href);
+    if (id === undefined) url.searchParams.delete(campaignQueryParam);
+    else url.searchParams.set(campaignQueryParam, String(id));
+    if (url.href !== window.location.href) window.history.replaceState(window.history.state, '', url);
+  }, []);
   const [loadedCampaignId, setLoadedCampaignId] = useState<number | null>(null);
   const [streams, setStreams] = useState<Stream[]>([]);
   const [drafts, setDrafts] = useState<ReadonlyMap<number, Draft>>(() => new Map());
@@ -45,14 +53,15 @@ export function useCampaignWorkspace() {
       try {
         const nextCampaigns = await api.campaigns(signal);
         if (signal.aborted) return;
-        const first = nextCampaigns[0];
+        const requestedId = new URLSearchParams(window.location.search).get(campaignQueryParam);
+        const selected = nextCampaigns.find(item => String(item.id) === requestedId) ?? nextCampaigns[0];
         setCampaigns(nextCampaigns);
-        setSelectedId(first ? String(first.id) : '');
-        if (first) {
-          const initialStreams = await api.streams(first.id, signal);
+        rememberCampaign(selected?.id);
+        if (selected) {
+          const initialStreams = await api.streams(selected.id, signal);
           if (signal.aborted) return;
           setStreams(initialStreams);
-          setLoadedCampaignId(first.id);
+          setLoadedCampaignId(selected.id);
         }
         const nextCatalog = await catalogRequest;
         if (signal.aborted) return;
@@ -76,7 +85,7 @@ export function useCampaignWorkspace() {
 
     void load();
     return () => controller.abort();
-  }, [attempt]);
+  }, [attempt, rememberCampaign]);
 
   useUnsavedChanges(drafts.size > 0);
 
@@ -122,10 +131,11 @@ export function useCampaignWorkspace() {
   }
 
   function selectCampaign(id: string) {
-    if (!id || Number(id) === loadedCampaignId || !confirmStreamLoad()) return;
+    const campaignId = Number(id);
+    if (!id || campaignId === loadedCampaignId || !confirmStreamLoad()) return;
     void perform('Загружаем потоки…', async () => {
-      await loadCampaign(Number(id));
-      setSelectedId(id);
+      await loadCampaign(campaignId);
+      rememberCampaign(campaignId);
       return 'Потоки загружены.';
     }, 'loading-editor');
   }
@@ -149,7 +159,7 @@ export function useCampaignWorkspace() {
         setDrafts(new Map());
       }
       setCampaigns(nextCampaigns);
-      setSelectedId(selected ? String(selected.id) : '');
+      rememberCampaign(selected?.id);
       const nextCatalog = await catalogRequest;
       if (typeof nextCatalog === 'string') warnings.push(`Справочники не обновились. ${nextCatalog}`);
       else setCatalog(nextCatalog);
@@ -169,7 +179,7 @@ export function useCampaignWorkspace() {
       });
       created = true;
       setCampaigns(previous => [...previous.filter(item => item.id !== campaign.id), campaign]);
-      setSelectedId(String(campaign.id));
+      rememberCampaign(campaign.id);
       setActivity('loading-editor');
       try {
         await loadCampaign(campaign.id);
@@ -184,8 +194,13 @@ export function useCampaignWorkspace() {
   function changeOffer(stream: Stream, action: DraftAction) {
     try {
       const next = editDraft(drafts.get(stream.id) ?? stream, action);
-      setDrafts(previous => new Map(previous).set(stream.id, next));
-      setNotice({ message: 'Черновик обновлён.' });
+      if (hasDraftChanges(stream, next)) {
+        setDrafts(previous => new Map(previous).set(stream.id, next));
+        setNotice({ message: 'Черновик обновлён.' });
+      } else {
+        clearDraft(stream.id);
+        setNotice({ message: 'Все изменения потока отменены.' });
+      }
       return true;
     } catch (error) {
       setNotice({ message: errorMessage(error), error: true, code: error instanceof ApiError ? error.code : 'error' });

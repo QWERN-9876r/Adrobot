@@ -26,7 +26,8 @@ export function OfferRow({ id, share, state, name, pinned, onEdit }: {
             <button type="button" className={pinned ? 'pin selected' : 'pin'}
               aria-label={`${pinLabel} долю оффера #${id}`}
               onClick={() => onEdit({ type: 'toggle-pin', offerId: id })}>
-              {pinLabel}
+              <span aria-hidden="true">Закрепить</span>
+              <span aria-hidden="true">Открепить</span>
             </button>
           ) : (
             <button type="button" className="text-button" disabled={state === 'removed' && !name}

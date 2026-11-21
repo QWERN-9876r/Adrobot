@@ -2,8 +2,19 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { load } from './helpers/load-typescript.mjs';
 
-const { editDraft } = await load('features/streams/model/shares');
+const { editDraft, hasDraftChanges } = await load('features/streams/model/shares');
 const offer = (offer_id, share) => ({ offer_id, share, state: 'active' });
+
+test('reversing a pin clears the change even when the saved pins are reordered', () => {
+  const saved = { offers: [offer(1, 25), offer(2, 25), offer(3, 50)], pins: [1, 2], removed: [] };
+  const toggle = { type: 'toggle-pin', offerId: 1 };
+  const unpinned = editDraft(saved, toggle);
+  assert.equal(hasDraftChanges(saved, unpinned), true);
+  assert.equal(hasDraftChanges(saved, editDraft(unpinned, toggle)), false);
+
+  const changed = editDraft(saved, { type: 'add', offerId: 4 });
+  assert.equal(hasDraftChanges(saved, editDraft(editDraft(changed, toggle), toggle)), true);
+});
 
 test('adding and removing keep integer shares summing to 100', () => {
   let draft = { offers: [], pins: [], removed: [] };

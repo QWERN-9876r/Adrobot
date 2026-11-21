@@ -28,6 +28,16 @@ export interface DraftAction {
   offerId: number;
 }
 
+export function hasDraftChanges(saved: Draft, draft: Draft): boolean {
+  if (saved.pins.length !== draft.pins.length || saved.offers.length !== draft.offers.length) return true;
+  const savedPins = new Set(saved.pins);
+  const savedOffers = new Map(saved.offers.map(offer => [offer.offer_id, offer]));
+  return draft.pins.some(id => !savedPins.has(id)) || draft.offers.some(offer => {
+    const previous = savedOffers.get(offer.offer_id);
+    return !previous || previous.share !== offer.share || previous.state !== offer.state;
+  });
+}
+
 export function editDraft(draft: Draft, { type, offerId }: DraftAction): Draft {
   const { offers, pins, removed } = draft;
   switch (type) {

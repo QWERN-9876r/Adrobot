@@ -33,7 +33,9 @@ export function StreamEditor({ stream, draft, catalogOffers, onEdit, onPublish, 
           <span aria-hidden="true" className={`stream-marker${editable ? ' rotation' : ''}`}>{editable ? '⇄' : '↗'}</span>
           <h3 id={`stream-${stream.id}`}>{stream.name}</h3>
         </div>
-        {draft && <span className="draft-label">Неопубликованные изменения</span>}
+        {editable && (rows.length > 0 || draft) && (
+          <span className="draft-label" aria-hidden={!draft}>Неопубликованные изменения</span>
+        )}
         {editable && !canChooseOffer && stream.operation_state === 'ready' && pickerOffers.length > 0 && (
           <button type="button" className="secondary" onClick={() => setAddingFirst(true)}>Добавить первый оффер</button>
         )}
