@@ -117,26 +117,44 @@ export function useCampaignWorkspace() {
     }
   }
 
+  function confirmStreamLoad() {
+    return drafts.size === 0 || window.confirm('Отменить неопубликованные изменения и загрузить потоки?');
+  }
+
+  function selectCampaign(id: string) {
+    if (!id || Number(id) === loadedCampaignId || !confirmStreamLoad()) return;
+    void perform('Загружаем потоки…', async () => {
+      await loadCampaign(Number(id));
+      setSelectedId(id);
+      return 'Потоки загружены.';
+    }, 'loading-editor');
+  }
+
   function fetchStreams(event: SubmitEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (drafts.size && !window.confirm('Отменить неопубликованные изменения и загрузить потоки?')) return;
+    if (!confirmStreamLoad()) return;
     void perform('Загружаем потоки…', async () => {
       const catalogRequest = requestCatalog();
-      const nextCampaigns = await api.campaigns();
-      setCampaigns(nextCampaigns);
+      const warnings: string[] = [];
+      const nextCampaigns = await api.campaigns().catch((error: unknown) => {
+        if (campaigns.length === 0) throw error;
+        warnings.push(`Список кампаний не обновился. ${errorMessage(error)}`);
+        return campaigns;
+      });
       const selected = nextCampaigns.find(item => String(item.id) === selectedId) ?? nextCampaigns[0];
-      setSelectedId(selected ? String(selected.id) : '');
       if (selected) await loadCampaign(selected.id);
       else {
         setStreams([]);
         setLoadedCampaignId(null);
         setDrafts(new Map());
       }
-      setStartupFailed(false);
+      setCampaigns(nextCampaigns);
+      setSelectedId(selected ? String(selected.id) : '');
       const nextCatalog = await catalogRequest;
-      if (typeof nextCatalog === 'string') return `Потоки обновлены. Справочники не обновились. ${nextCatalog}`;
-      setCatalog(nextCatalog);
-      return 'Потоки обновлены.';
+      if (typeof nextCatalog === 'string') warnings.push(`Справочники не обновились. ${nextCatalog}`);
+      else setCatalog(nextCatalog);
+      setStartupFailed(false);
+      return ['Потоки обновлены.', ...warnings].join(' ');
     }, 'loading-editor');
   }
 
@@ -205,7 +223,7 @@ export function useCampaignWorkspace() {
     setNotice({ message: 'Попытка закрыта в этой вкладке. Можно создать новую кампанию.' });
   }
 
-  return { catalog, campaigns, selectedId, setSelectedId, streams, drafts, busy, loadingEditor, startupFailed,
+  return { catalog, campaigns, selectedId, selectCampaign, streams, drafts, busy, loadingEditor, startupFailed,
     notice, retryStartup, fetchStreams, createCampaign, changeOffer, publish, acceptRemote,
     loadedCampaign, cancelDraft, dismissCreationAttempt };
 }

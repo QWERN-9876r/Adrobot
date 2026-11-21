@@ -1,6 +1,7 @@
 import json
 import unittest
 from unittest.mock import MagicMock, patch
+from urllib.error import URLError
 from urllib.parse import parse_qs, urlsplit
 from adrobot.domain.errors import Problem
 from adrobot.infrastructure.keitaro.client import Keitaro
@@ -53,6 +54,20 @@ class RequestTests(unittest.TestCase):
     def test_explicit_pagination_is_preserved(self):
         request, _ = self.request('/campaigns?offset=0&limit=25')
         self.assertEqual(parse_qs(urlsplit(request.full_url).query), {'offset': ['0'], 'limit': ['25']})
+
+    def test_temporary_failure_on_later_page_retries_the_same_offset(self):
+        first_page = [{'id': 1, 'name': 'Test', 'state': 'active'}]
+        with patch('adrobot.infrastructure.keitaro.client.build_opener') as opener:
+            response = MagicMock(status=200)
+            response.read.side_effect = [json.dumps(first_page).encode(), b'[]']
+            connection = MagicMock()
+            connection.__enter__.return_value = response
+            opener.return_value.open.side_effect = [connection, URLError(TimeoutError()), connection]
+            campaigns = Keitaro('https://tracker.example', 'test-key').call('/campaigns')
+        self.assertEqual(campaigns, first_page)
+        requests = [call.args[0] for call in opener.return_value.open.call_args_list]
+        self.assertEqual([parse_qs(urlsplit(request.full_url).query)['offset'][0]
+                          for request in requests], ['0', '1', '1'])
 
     def test_post_has_json_content_type_without_pagination(self):
         request, _ = self.request('/campaigns', 'POST', {'name': 'Test'})

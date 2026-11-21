@@ -27,7 +27,7 @@ function StreamListSkeleton() {
 }
 
 export function CampaignEditor({ workspace }: { workspace: CampaignWorkspace }) {
-  const { campaigns, catalog, selectedId, setSelectedId, fetchStreams, busy, loadingEditor, loadedCampaign,
+  const { campaigns, catalog, selectedId, selectCampaign, fetchStreams, busy, loadingEditor, loadedCampaign,
     streams, drafts, acceptRemote, changeOffer, publish, cancelDraft } = workspace;
   const loadingCampaigns = loadingEditor && campaigns.length === 0;
   return (
@@ -41,7 +41,7 @@ export function CampaignEditor({ workspace }: { workspace: CampaignWorkspace }) 
         <fieldset className="campaign-picker" disabled={busy}>
           <label>
             Кампания
-            <select disabled={campaigns.length === 0} value={selectedId} onChange={event => setSelectedId(event.target.value)}>
+            <select disabled={campaigns.length === 0} value={selectedId} onChange={event => selectCampaign(event.target.value)}>
               <SelectOptions items={campaigns} placeholder="Выберите кампанию" showIds />
             </select>
           </label>

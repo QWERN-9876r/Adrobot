@@ -41,12 +41,12 @@ class Keitaro:
             if 'offset' in query or 'limit' in query:
                 query.setdefault('offset', '0')
                 query.setdefault('limit', '1000')
-                return self._request(parsed._replace(query=urlencode(query)).geturl(), method, body)
+                return self._campaign_page(parsed._replace(query=urlencode(query)).geturl(), body)
             campaigns = {}
             offset = 0
             while True:
                 page_path = parsed._replace(query=urlencode({**query, 'offset': offset, 'limit': 1000})).geturl()
-                page = self._request(page_path, method, body)
+                page = self._campaign_page(page_path, body)
                 if not page:
                     return list(campaigns.values())
                 if all(row['id'] in campaigns for row in page):
@@ -54,6 +54,18 @@ class Keitaro:
                 campaigns.update((row['id'], row) for row in page)
                 offset += len(page)
         return self._request(path, method, body)
+
+    def _campaign_page(self, path, body):
+        try:
+            return self._request(path, 'GET', body)
+        except Problem as error:
+            cause = error.__cause__
+            if isinstance(cause, HTTPError):
+                if cause.code not in {408, 500, 502, 503, 504}:
+                    raise
+            elif not isinstance(cause, (OSError, HTTPException)):
+                raise
+            return self._request(path, 'GET', body)
 
     def _request(self, path, method, body):
         request_id = uuid4().hex[:12]
