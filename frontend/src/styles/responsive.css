@@ -1,0 +1,21 @@
+@media (max-width: 880px) {
+  .shell { padding-inline: 18px; }
+  .workspace { gap: 14px; grid-template-columns: minmax(240px, 285px) minmax(0, 1fr); }
+  .panel-header, .create-fields, .campaign-picker, .stream-list { padding-inline: 14px; }
+  .loaded-campaign { margin-inline: 14px; }
+}
+@media (max-width: 690px) {
+  .workspace { grid-template-columns: 1fr; }
+  .page-heading { padding-top: 24px; }
+}
+@media (max-width: 420px) {
+  .shell { padding-inline: 12px; }
+  .offer-picker { grid-template-columns: minmax(0, 1fr); }
+  table { table-layout: fixed; }
+  thead th:nth-child(1) { width: 41%; }
+  thead th:nth-child(2) { width: 22%; }
+  th, td { padding: 7px; }
+  .share { min-width: 0; }
+  meter { width: 45px; }
+  .row-actions button { max-width: 100%; min-height: 40px; padding-inline: 3px; overflow-wrap: anywhere; }
+}

@@ -1,0 +1,46 @@
+.stream {
+  margin-top: 12px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+}
+.stream.draft { border-color: var(--draft-border); }
+.stream:has(.offer-search-popup) { overflow: visible; }
+.stream-header { display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap; padding: 11px 13px; background: var(--subtle); }
+.stream-title { display: flex; flex: 1 1 12rem; align-items: center; gap: 10px; min-width: 0; }
+.stream-marker {
+  display: grid;
+  place-items: center;
+  flex: 0 0 29px;
+  height: 29px;
+  color: var(--stream-marker-text);
+  background: var(--stream-marker);
+  border-radius: 7px;
+  font-weight: 700;
+}
+.stream-marker.rotation { color: var(--accent-text); background: var(--rotation-marker); }
+.draft .stream-header, .publish { background: var(--draft-bg); }
+.draft-label { color: var(--draft-text); font-size: .78rem; font-weight: 650; }
+.empty { padding: 14px 22px; color: var(--muted); font-size: .89rem; }
+
+table { width: 100%; border-collapse: collapse; font-size: .88rem; }
+th, td { padding: 9px 12px; text-align: left; border-bottom: 1px solid var(--border); }
+thead th { color: var(--muted); font-size: .75rem; }
+td strong { display: block; font-weight: 650; overflow-wrap: anywhere; }
+td small { color: var(--muted); font-size: .75rem; }
+.inactive { background: var(--inactive); color: var(--muted); }
+.share { display: grid; align-items: center; gap: 5px; font-variant-numeric: tabular-nums; min-width: 55px; }
+.inactive-share { font-size: .78rem; }
+meter { display: block; width: 65px; height: 7px; appearance: none; background: var(--meter-track); border-radius: 4px; }
+meter::-webkit-meter-bar { background: var(--meter-track); border: 0; }
+meter::-webkit-meter-optimum-value { background: var(--accent); }
+meter::-moz-meter-bar { background: var(--accent); border-radius: 4px; }
+tfoot { font-weight: 670; background: var(--subtle); }
+.row-actions { display: flex; flex-wrap: wrap; gap: 3px 6px; }
+.row-actions button { min-height: 34px; padding: 5px 7px; font-size: .78rem; background: transparent; color: var(--accent-text); }
+.row-actions button:hover:not(:disabled), .row-actions .selected { background: var(--selected); }
+.row-actions button.remove { color: var(--danger); }
+.row-actions button.remove:hover:not(:disabled) { background: var(--danger-hover); }
+.offer-picker { display: grid; grid-template-columns: minmax(0, 1fr) auto; padding: 12px; }
+.offer-picker .offer-search-empty { grid-column: 1 / -1; }
+.publish { padding: 10px 12px; display: flex; gap: 8px; justify-content: flex-end; flex-wrap: wrap; }

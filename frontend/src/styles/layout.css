@@ -1,0 +1,97 @@
+.shell { max-width: 1328px; margin-inline: auto; padding-inline: 32px; }
+.topbar { background: var(--topbar); color: #fff; }
+.topbar-content { min-height: 64px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px 16px; padding-block: 8px; }
+.brand { display: flex; align-items: center; gap: 11px; font-size: 1.14rem; font-weight: 720; }
+.brand-mark {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  background: #d7f3bd;
+  color: #193329;
+  border-radius: 9px;
+}
+.mode { display: flex; align-items: center; gap: 8px; color: #e2efe9; font-size: .82rem; }
+.mode-dot { width: 8px; height: 8px; border-radius: 50%; background: #bde7a7; }
+.topbar-actions { display: flex; align-items: center; justify-content: flex-end; flex-wrap: wrap; gap: 8px 20px; }
+.theme-toggle {
+  display: grid;
+  place-items: center;
+  width: 42px;
+  padding: 0;
+  border-color: #738f81;
+  background: #20372e;
+  color: #bde7a7;
+}
+.theme-toggle:hover:not(:disabled) { background: #314e41; }
+.theme-toggle:focus-visible { outline-color: #7edab3; }
+.loading-bar { height: 3px; overflow: hidden; }
+.loading-bar:has(.loading-bar-indicator) { background: var(--border); }
+.loading-bar-indicator {
+  display: block;
+  width: 32%;
+  height: 100%;
+  background: var(--accent);
+}
+@media (prefers-reduced-motion: no-preference) {
+  .loading-bar-indicator { animation: loading-bar-slide 1.35s ease-in-out infinite; }
+}
+@keyframes loading-bar-slide {
+  from { transform: translateX(-100%); }
+  to { transform: translateX(313%); }
+}
+.page-heading { padding: 32px 0 4px; }
+h1 { font-size: clamp(1.75rem, 4vw, 2.55rem); line-height: 1.14; letter-spacing: -.035em; }
+h2 { font-size: 1.15rem; letter-spacing: -.015em; }
+h3 { font-size: 1rem; overflow-wrap: anywhere; }
+.status-line { display: flex; align-items: center; gap: 12px; min-height: 34px; margin-bottom: 7px; }
+.status { color: var(--accent-text); font-size: .87rem; overflow-wrap: anywhere; }
+.status.error { color: var(--danger); }
+
+.workspace {
+  display: grid;
+  grid-template-columns: minmax(270px, 325px) minmax(0, 1fr);
+  gap: 22px;
+  align-items: start;
+  padding-bottom: 32px;
+}
+.panel { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; min-width: 0; }
+.panel-header { padding: 19px 22px; border-bottom: 1px solid var(--border); }
+.create-fields { display: grid; gap: 13px; padding: 18px 22px 22px; }
+.route-preview {
+  padding: 10px 12px;
+  background: var(--subtle);
+  border-radius: 8px;
+  color: var(--muted);
+  font-size: .78rem;
+}
+.route-preview div { display: grid; grid-template-columns: 1fr auto 54px; gap: 8px; align-items: center; }
+.route-preview div + div { margin-top: 5px; }
+.route-preview strong { color: var(--accent-text); }
+.campaign-picker, .offer-picker { display: flex; align-items: end; flex-wrap: wrap; gap: 10px; }
+.campaign-picker { padding: 18px 22px; }
+.campaign-picker label { flex: 1 1 180px; }
+.loaded-campaign { margin: 0 22px; color: var(--muted); font-size: .84rem; overflow-wrap: anywhere; }
+.stream-list { padding: 0 22px 22px; }
+.creation-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.offer-search { position: relative; display: grid; gap: 5px; min-width: 0; }
+.offer-search-popup {
+  position: absolute;
+  z-index: 2;
+  inset: calc(100% + 4px) 0 auto;
+  margin: 0;
+  padding: 4px;
+  max-height: 240px;
+  overflow: auto;
+  list-style: none;
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  background: var(--surface);
+  box-shadow: 0 6px 18px var(--shadow);
+  font-size: .87rem;
+}
+.offer-search-popup li { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; padding: 9px; border-radius: 5px; cursor: pointer; overflow-wrap: anywhere; }
+.offer-search-popup li:hover, .offer-search-popup [aria-selected="true"] { background: var(--selected); color: var(--accent-text); }
+.offer-search-popup small { flex: none; color: var(--muted); }
+p.offer-search-popup { padding: 9px 12px; }
+.offer-search-empty { font-size: .82rem; color: var(--muted); }

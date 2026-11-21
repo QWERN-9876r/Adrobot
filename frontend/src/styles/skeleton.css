@@ -1,0 +1,30 @@
+.skeleton {
+  display: block;
+  min-width: 0;
+  background: var(--skeleton);
+  border-radius: 6px;
+}
+
+.campaign-picker-skeleton > div { display: grid; gap: 5px; flex: 1 1 180px; }
+.campaign-skeleton-label { width: 5.5rem; height: 1.25rem; }
+.campaign-skeleton-control { height: 42px; }
+.campaign-picker-skeleton > .campaign-skeleton-control { flex: 0 1 15.5rem; max-width: 100%; }
+.stream-skeleton-marker { width: 29px; height: 29px; }
+.stream-skeleton-title { width: min(40%, 11rem); height: 14px; margin-right: auto; }
+.stream-skeleton-row {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr;
+  align-items: center;
+  gap: 12px;
+  min-height: 44px;
+  padding: 10px 12px;
+}
+.stream-skeleton-row + .stream-skeleton-row { border-top: 1px solid var(--border); }
+.stream-skeleton-row .skeleton { width: 60%; height: 12px; }
+.stream-skeleton-row .skeleton:first-child { width: 85%; }
+
+@media (prefers-reduced-motion: no-preference) {
+  .skeleton { animation: skeleton-pulse 1.4s ease-in-out infinite alternate; }
+}
+
+@keyframes skeleton-pulse { from { opacity: .58; } to { opacity: 1; } }

@@ -1,0 +1,35 @@
+:root {
+  color-scheme: light dark;
+  --page: light-dark(#f3f5f1, #101915);
+  --surface: light-dark(#fff, #18241f);
+  --field: light-dark(#fff, #111d18);
+  --text: light-dark(#172923, #edf5ee);
+  --muted: light-dark(#52665d, #b1c4ba);
+  --placeholder: light-dark(#627770, #a1b8ac);
+  --accent: light-dark(#17644e, #85d6aa);
+  --accent-hover: light-dark(#104e3c, #a2e5c1);
+  --accent-text: light-dark(#104e3c, #9be1bd);
+  --on-accent: light-dark(#fff, #13251c);
+  --focus: light-dark(#267e63, #7edab3);
+  --border: light-dark(#d9e2db, #33483d);
+  --control-border: light-dark(#aebfb3, #637d70);
+  --subtle: light-dark(#f5f8f5, #202e27);
+  --hover: light-dark(#e8f2eb, #263e33);
+  --selected: light-dark(#e1f1e7, #2a4538);
+  --inactive: light-dark(#f7f8f7, #1e2a24);
+  --danger: light-dark(#9d3332, #f5a6a2);
+  --danger-hover: light-dark(#fbe9e7, #492a2a);
+  --stream-marker: light-dark(#e6ece8, #31453b);
+  --stream-marker-text: light-dark(#425950, #c5d8cc);
+  --rotation-marker: light-dark(#dcf0e4, #29483a);
+  --draft-border: light-dark(#c7a15b, #ac834b);
+  --draft-bg: light-dark(#fff6e6, #352a1c);
+  --draft-text: light-dark(#6c450f, #f2cb8e);
+  --meter-track: light-dark(#dfeae2, #344b3e);
+  --skeleton: light-dark(#e6ece8, #31443a);
+  --shadow: light-dark(#17292320, #0007);
+  --topbar: light-dark(#152b24, #0b1713);
+}
+
+:root[data-theme="light"] { color-scheme: light; }
+:root[data-theme="dark"] { color-scheme: dark; }
