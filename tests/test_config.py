@@ -8,15 +8,13 @@ from adrobot.config import load_environment
 
 
 class EnvironmentTests(unittest.TestCase):
-    def test_loads_credentials_without_interpolating_password(self):
+    def test_loads_configuration_without_interpolating_values(self):
         with tempfile.TemporaryDirectory() as folder, patch.dict(os.environ, {}, clear=True):
             path = Path(folder) / '.env'
-            path.write_text("KEITARO_URL=https://example.test\nKEITARO_LOGIN=test-user\nKEITARO_PASSWORD='literal ${TOKEN} # space'\nKEITARO_API_KEY=test-key\n")
+            path.write_text("KEITARO_URL=https://example.test\nKEITARO_API_KEY='literal ${TOKEN} # space'\n")
             load_environment(path)
             self.assertEqual(os.environ['KEITARO_URL'], 'https://example.test')
-            self.assertEqual(os.environ['KEITARO_LOGIN'], 'test-user')
-            self.assertEqual(os.environ['KEITARO_PASSWORD'], 'literal ${TOKEN} # space')
-            self.assertEqual(os.environ['KEITARO_API_KEY'], 'test-key')
+            self.assertEqual(os.environ['KEITARO_API_KEY'], 'literal ${TOKEN} # space')
 
     def test_process_environment_takes_precedence(self):
         with tempfile.TemporaryDirectory() as folder, patch.dict(os.environ, {'PORT': '8794'}, clear=True):

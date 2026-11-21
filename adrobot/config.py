@@ -7,8 +7,7 @@ FRONTEND_BUILD = ROOT / "frontend" / "dist"
 
 
 def load_environment(path: Path = ROOT / ".env") -> None:
-    # Environment overrides the file. Disable interpolation so passwords
-    # containing dollar signs are preserved literally.
+    # Keep process environment overrides and preserve literal values from .env.
     load_dotenv(path, override=False, interpolate=False, encoding="utf-8")
 
 

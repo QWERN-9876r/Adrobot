@@ -9,7 +9,7 @@ SENSITIVE = re.compile(r'authorization|cookie|password|passwd|secret|token|api.?
 
 
 def diagnostic(value, api_key):
-    secrets = [api_key, os.getenv('KEITARO_PASSWORD'), os.getenv('KEITARO_API_KEY')]
+    secrets = [api_key, os.getenv('KEITARO_API_KEY')]
 
     def text(value):
         for secret in secrets:
